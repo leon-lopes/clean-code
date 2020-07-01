@@ -129,6 +129,9 @@ Limitar a quantidade de parâmetros de função é muito importante, isso facili
 
 ## Funções devem fazer somente uma coisa
 
+Essa é de longe a regra mais importante na engenharia de software. Quando as funções fazem mais de uma coisa, são mais difíceis de compor, testar e raciocinar. 
+Quando você isola uma função em apenas uma ação, elas podem ser refatoradas facilmente e seu código ficará muito mais limpo.
+
 ### Errado:
 ```JAVA
   public void enviarEmail(List<Usuario> usuarios) {
