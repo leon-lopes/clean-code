@@ -153,8 +153,9 @@ Limitar a quantidade de parâmetros de função é muito importante, isso facili
   }
   
   public boolean verificaUsuario(Usuario usuario){
+    int IDADE_MINIMA = 18;
     String status = usuario.getStatus();
     int idade = usuario.getIdade();
-    return status == "ativo" && idade >= 18;
+    return status == "ativo" && idade >= IDADE_MINIMA;
   }
 ```
