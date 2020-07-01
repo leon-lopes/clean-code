@@ -56,10 +56,103 @@ Este passo é muito importante pois o livro ressalta que passsamos mais tempo le
     return pessoa.dependentes.size() > 5
   }
   ```
-
+### Correto
   ```JAVA
   boolean podeTerMaisDependentes(){
     int NUMERO_MAXIMO_DE_DEPENDENTES = 5; 
     return pessoa.dependentes.size() > NUMERO_MAXIMO_DE_DEPENDENTES
   }
   ```
+
+## Evite ter que ficar lembrando o que cada coisa faz
+Explicito é melhor que implicito
+
+### Errado:
+```JAVA
+  String [] f = {"Maçã", "Pera", "Banana"}
+  
+  for (int i = 0; i < l.length; i++) {
+    String fi = f[i];
+    funcao1();
+    funcao2();
+    // ...
+    // Chega uma hora que você esquece o que fi faz. 
+    funcaoN(fi);
+ }
+```
+### Correto
+
+```JAVA
+  String [] fruta = {"Maçã", "Pera", "Banana"}
+  
+  for (String fruta : frutas) {
+    funcao1();
+    funcao2();
+    // ...
+    // ...
+    // ...
+    funcaoN(fruta);
+ }
+```
+
+## Não adicione o que não é necessário
+Se o objeto ou a classe já te indicam algo, não é preciso repeti-los
+
+### Errado:
+```JAVA
+  class Cachorro{
+    public String cachorroNome;
+    public String cachorroRaca;
+    public String cachorroCor
+    //...
+  }
+```
+### Correto:
+```JAVA
+  class Cachorro{
+    public String nome;
+    public String raca;
+    public String cor
+    //...
+  }
+```
+
+## Funções
+
+## Funções com menos de dois argumento é o ideal
+
+Um ou dois argumentos é o caso ideal, e três devem ser evitados (se possível). Qualquer coisa além disso deve ser consolidada. Normalmente, se você tiver mais de dois argumentos, sua função está tentando fazer muito.
+
+Ter mais de três leva a uma explosão combinatória, na qual é necessário testar toneladas de casos diferentes com cada argumento separado.
+Limitar a quantidade de parâmetros de função é muito importante, isso facilita o teste de sua função.
+  
+
+## Funções devem fazer somente uma coisa
+
+### Errado:
+```JAVA
+  public void enviarEmail(List<Usuario> usuarios) {
+    for (Usuario usuario : usuarios) {
+        String status = usuario.getStatus();
+        if (status == "ativo"){
+            email(usuario);
+        }
+    }
+  }
+```
+
+### Certo:
+```JAVA
+  public void enviarEmail(List<Usuario> usuarios) {
+    for (Usuario usuario : usuarios) {
+        if (status == "ativo"){
+            email(usuario);
+        }
+    }
+  }
+  
+  public boolean verificaStatus(Usuario usuario){
+    String status = usuario.getStatus();
+    return status == "ativo"
+  }
+```
