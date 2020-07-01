@@ -134,7 +134,8 @@ Limitar a quantidade de parâmetros de função é muito importante, isso facili
   public void enviarEmail(List<Usuario> usuarios) {
     for (Usuario usuario : usuarios) {
         String status = usuario.getStatus();
-        if (status == "ativo"){
+        int idade = usuario.getIdade();
+        if (status == "ativo" && idade >= 18){
             email(usuario);
         }
     }
@@ -145,14 +146,15 @@ Limitar a quantidade de parâmetros de função é muito importante, isso facili
 ```JAVA
   public void enviarEmail(List<Usuario> usuarios) {
     for (Usuario usuario : usuarios) {
-        if (verificaStatus(usuario)){
+        if (verificaUsuario(usuario)){
             email(usuario);
         }
     }
   }
   
-  public boolean verificaStatus(Usuario usuario){
+  public boolean verificaUsuario(Usuario usuario){
     String status = usuario.getStatus();
-    return status == "ativo"
+    int idade = usuario.getIdade();
+    return status == "ativo" && idade >= 18;
   }
 ```
