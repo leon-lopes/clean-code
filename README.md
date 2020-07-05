@@ -246,3 +246,236 @@ Versionamento é o responsável por manter o histórico do seu código.
 ```JAVA
   funcao()
 ```
+# Formatação
+  ## Formatação Vertical
+Em uma formatação vertical, geralmente uma classe possui 200 linhas, com um limite de 500. Porém, classes menores são mais fáceis de compreender. Já na horizontal é sugerido um limite de 120 caracteres por linha. Utilize espaços entres operadores, parâmetros e vírgulas, sempre idente o seu código e nunca tenha linhas de código que sejam mais longas do que a sua tela;
+
+  ```JAVA 
+    public class DeviceController {
+        ...
+        public void sendShutDown() {
+          try {
+            tryToShutDown();
+          } catch (DeviceShutDownError e) {
+            logger.log(e);
+          }
+        }
+
+        private void tryToShutDown() throws DeviceShutDownError {
+          DeviceHandle handle = getHandle(DEV1);
+          DeviceRecord record = retrieveDeviceRecord(handle);
+
+          pauseDevice(handle);
+          clearDeviceWorkQueue(handle);
+          closeDevice(handle);
+        }
+
+        private DeviceHandle getHandle(DeviceID id) {
+          ...
+          throw new DeviceShutDownError("Invalid handle for: " + id.toString());
+          ...
+        }
+        ...
+  }
+  ```
+  ## Formatação Horizontal
+  O ideal é que não haja a necessidade de rolagem horizontal para a leitura de código, porém, devido a diferentes tamanhos de monitores, o ideal é que utilizemos o bom senso.
+  
+  ``` JAVA
+    private void measurLine(String line) {
+        lineCount++;
+        int lineSize = line.length();
+        totalChars += lineSize;
+        lineWidthHistogram.addLine(lineSize, lineCount);
+        recordWidestLine(lineSize);
+    }
+  ```
+  ## Indentação
+  A fim de tornar visivel a hierarquia dos escopos, endentamos as linhas do codigo fonte codigo fonte de acordo com sua posição na hierarquia. 
+  Os programadores dependem bastante desse esquema de endentação, Eles alinham visualmente na esquerda as linhas para ver em qual escopo elas estão.
+
+  ### Errado
+   ``` JAVA
+    public class FitNesseServer implements SocketServer { private fitNesseContext
+      context; public fitNesseServer(FitNesseContext context) { this.context = context; }
+      public void serve(Socket s) { serve(s, 10000); } public void serve(Socket s, long requestTimeout) {
+      try { FitNesseExpediter sender = new 
+      FitNesseEXpediter(s, context);
+      sender.setRequestParsingTimeLimit(requestTimeout); sender.start(); }
+      catch(Exception e) { e.printStackTrace(); } } }
+   ```
+   
+   ### Correto
+   ``` JAVA
+        public class FitNesseServer implements SocketServer { 
+          private fitNesseContext context; 
+
+          public fitNesseServer(FitNesseContext context) { 
+            this.context = context; 
+          }
+
+          public void serve(Socket s) { 
+            serve(s, 10000); 
+          } 
+
+          public void serve(Socket s, long requestTimeout) {
+            try { 
+              FitNesseExpediter sender = new 
+              FitNesseEXpediter(s, context);
+              sender.setRequestParsingTimeLimit(requestTimeout); 
+              sender.start(); 
+            }
+            catch(Exception e) { 
+              e.printStackTrace(); 
+            } 
+          } 
+        }
+   ```
+
+# Tratamento de Erro
+Antigamente muitas linguagens que não suportavam exceções. Assim para tratar e informar erros era limitada. Ou se utilizava flags ou retornava um codigo de erro que o programador verifica.
+O problema era que essas tecnicas entupiam o chamador que deveria verificar erros imediatamente após a chamada, assim era mais facil esquecer de realizar este procedimento. 
+Assim é melhor colocar uma exceção quando um erro for encontrado, o codigo fica mais limpo e sua lógica nao fica ofuscada pelo tratamento de erro.
+ 
+ ### Errado
+
+  ``` Java
+  public class DeviceController {
+	... 
+    public void sendShutDown() {
+      DeviceHandle handle = getHandle(DEV1);
+      //State of the device
+      if(handle != deviceHandle.INVALID) {
+        //Save the device Status to the record Field
+        retrieveDeviceRecord(handle);
+        if (record.getStatus() != DEVICE_SUSPENDED) {
+          pauseDevice(handle);
+          clearDeviceWorkQueue(handle);
+          closeDevice(handle);
+        } else {
+          logger.log("Device suspended. Unable to shut down");
+        }
+      else {
+        logger.log("Invalid handle for: " + DEV1.toString());
+      }
+    }
+    ...
+}
+  ```
+  
+  ### Correto
+  ```JAVA 
+    public class DeviceController {
+        ...
+        public void sendShutDown() {
+          try {
+            tryToShutDown();
+          } catch (DeviceShutDownError e) {
+            logger.log(e);
+          }
+        }
+
+        private void tryToShutDown() throws DeviceShutDownError {
+          DeviceHandle handle = getHandle(DEV1);
+          DeviceRecord record = retrieveDeviceRecord(handle);
+
+          pauseDevice(handle);
+          clearDeviceWorkQueue(handle);
+          closeDevice(handle);
+        }
+
+        private DeviceHandle getHandle(DeviceID id) {
+          ...
+          throw new DeviceShutDownError("Invalid handle for: " + id.toString());
+          ...
+        }
+        ...
+  }
+  ```
+  
+# Testes de Unidade
+Apesar de muitas pessoas ainda não entenderem a importancia dos testes unitarios, é muito importante ser realizado, alem disso é fundamental que eles estejam bem escritos.
+No TDD existem 3 Leis:
+	- Primeira Lei: Não se deve escrever o código de produção até criar um teste de unidade de falhas
+	- Segunda Lei: Não se deve escrever mais de um teste de unidade do que o necessário para falhar, e não compilar é falhar.
+	- Terceira Lei: Não se deve escrever mais códigos de produção que o necessario para aplicar o teste de falha atual.
+
+## Testes Limpos
+O que constituem um teste limpo é principalmente a legibilidade. Mas o que faz ele ser legivel ? Clareza, simplicidade e consistencia de expressão.
+
+### Errado
+``` JAVA
+	public void testGetPageHieratchyAsXml() throws Exception {
+	crawler.addPage(root, PathParser.pase("PageOne"));
+	crawler.addPage(root, PathParser.pase("PageOne"));
+	crawler.addPage(root, PathParser.pase("PageOne"));
+	request.setResource("root");
+	request.addInput("type","pages");
+	Responder responder = new SeriaalizedPageResponder();
+	SimpleResponse response =
+		(SimpleResponse) responder.makeResponse(
+			new FitNesseContext(root), request);
+	String xml = response.getContent();
+	
+	assertEquals("text/xml", response.getContentType());
+	assertSubString("<name>PageOne</name>", xml);
+	assertSubString("<name>PageTwo</name>", xml);
+	assertSubString("<name>ChildOne</name>", xml);
+}
+```
+
+### Correto 
+```JAVA
+	public void testGetPageHierarchyAsXml () throws Exception {
+	makePages(*PageOne", "PageOne.ChildOne", "PageTwo");
+
+	submitRequest("root", "type:pages");
+
+	assertResponseIsXML();
+	assertResponseContains(
+		"<name>PageOne</name>", "<name>PageTwo</name>", "<name>ChildOne</name>"
+	);
+}
+```
+# Classes
+A primeira regra para classes é que devem ser pequenas. A segunda é que devem ser menores ainda.
+
+O principio da Responsabilidade, afirma que uma classe ou módulo deve ter um, e apenas um, motivo ára mudar.
+Este principio nos dá uma definição de responsabilidade e uma orientaçao para o tamanho da classe.
+
+### Principio da Responsabilidade Unica
+ ``` JAVA
+		public class Version {
+			public int getMajorVersionNumber();
+			public int getMinorVersionNumber();
+			public int getBuildNumber ();
+		}
+```
+###  Classe Coesa
+As classes devem ter um pequeno número de instâncias de variáveis. Cada método de uma classe deve manipular uma ou mais dessas variáveis.
+De modo geral, não é aconselhável e nem possível criar tais classes totalmente coessas.
+
+```JAVA
+	public class Stack {
+		private int topOfStack = 0;
+		List<Integer> elements = new LinkedList<Integer>();
+
+		public int size() {
+			return topOfStack;
+		}
+
+		public void push(int element) {
+			topOfStack++;
+			elements.add(element);
+		}
+
+		public int pop() throws PoppedWhenEmpty {
+			if(topOfStack == 0) {
+				throw new PoppedWhenEmpty();
+			}
+			int element = elements.get(--topOfStack);
+			elements.remove(topOfStack);
+			return element;
+		}
+	}
+```
