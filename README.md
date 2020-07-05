@@ -1,5 +1,6 @@
 # clean-code
 
+
 # Origem
 As técnicas do Clean Code apareceram pela primeira vez no livro “Clean Code: A Handbook of Agile Software Craftsmanship”, lançado em 2008. Ele foi escrito por Robert Cecil Martin, conhecido na comunidade como Uncle Bob. O autor atua na área de desenvolvimento desde 1970 e é um dos profissionais por trás do Manifesto Ágil, lançado em 2001.
 Com seus longos anos de experiência, ele conseguiu perceber que o gargalo principal no desenvolvimento de software estava justamente na manutenção. Ou seja, um código mal escrito desde a sua primeira versão pode funcionar, mas vai gerar prejuízos enormes.
@@ -161,4 +162,87 @@ Quando você isola uma função em apenas uma ação, elas podem ser refatoradas
     int idade = usuario.getIdade();
     return status == "ativo" && idade >= IDADE_MINIMA;
   }
+```
+
+## O nome da funções devem dizer o que elas fazem
+### Errado:
+
+```JAVA
+private void adicionar(Pessoa p1, Pessoa p2){
+    //...
+}
+Pessoa p1 = new Pessoa();
+Pessoa p2 = new Pessoa();
+adicionar(p1, p2);
+```
+### Certo:
+
+```JAVA
+private void vincularDependente(Pessoa pessoa, Pessoa dependente){
+    //...
+}
+
+Pessoa pessoa = new Pessoa();
+Pessoa dependente = new Pessoa();
+vincularDependente(pessoa, dependente);
+```
+
+
+## As funções devem ter apenas um nível de abstração
+Quando você tem mais de um nível de abstração sua função geralmente está fazendo muito. A divisão de funções leva à reutilização e testes mais fáceis.
+
+## Comentários
+Apenas comente o que tiver um grau de complexidade envolvendo a regra de negócio ~e olhe lá~
+Um bom codigo já é sua própria documentação.
+
+### Errado:
+
+```JAVA
+  //Essa função soma dois números
+  private somar(numero1, numero2){
+  //Essa linha retorna a soma dos dois números
+    return numero1 + numero2
+  }
+```
+### Certo:
+```JAVA
+  private somar(numero1, numero2){
+    return numero1 + numero2
+  }
+```
+
+## Não use comentários quando você pode usar uma função ou uma variavel
+O melhor comentário é não comentar
+
+### Errado:
+
+```JAVA
+  // Verifica se o usuario pode ser cobrado
+  if (usuario.status() == "ativo" && usuario.ultimoPagamento() < umMesAtras){
+  //...
+  }
+
+```
+### Correto:
+
+```JAVA
+  if(usuario.podeSerCobrado()){
+  //...
+  }
+```
+
+## Não deixe código legado comentado
+Versionamento é o responsável por manter o histórico do seu código.
+
+### Errado:
+```JAVA
+  funcao()
+  //funcaoX()
+  //funcaoY()
+  //funcaoZ()
+```
+### Certo:
+
+```JAVA
+  funcao()
 ```
